@@ -16,14 +16,14 @@ func main() {
 	app.SetArgs(getArgs())
 
 	clientConfig := &ssh.ClientConfig{
-		User: username,
+		User: app.Client.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(password),
+			ssh.Password(app.Client.Password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	connection, err := ssh.Dial("tcp", host+":"+strconv.Itoa(port), clientConfig)
+	connection, err := ssh.Dial("tcp", app.Host.Address+":"+strconv.Itoa(app.Host.Port), clientConfig)
 	if err != nil {
 		log.Printf("Failed to dial: %s", err)
 		return
@@ -40,7 +40,7 @@ func main() {
 	session.Stdout = os.Stdout
 	session.Stderr = os.Stderr
 
-	err = session.Run(command)
+	err = session.Run(app.Command)
 	if err != nil {
 		log.Printf("Failed to run command: %s", err)
 		return
